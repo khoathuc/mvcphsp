@@ -21,10 +21,12 @@ use app\models\User;
                 if($userId){
                     $user = User::findOne(['id'=>$userId]);
                 }
+
                 if($request ->isPost()){
-                    
+                    $body = $request->getBody();
+                    $user = User::update($request->getBody());
                 }
-                
+
                 return $this->render('info',[
                     'userModel'=>$user
                 ]);
