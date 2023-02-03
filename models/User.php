@@ -2,6 +2,7 @@
     namespace app\models;
     use app\core\Model;
     use app\core\DbModel;
+    use app\core\Application;
     /**
      * Class RegisterModel
      * @package app\models
@@ -17,9 +18,7 @@
         public string $confirmPassword = '';
         public string $jobTitle = '';
         public string $avatar = '';
-        public string $dateOfBirth = '';
-        public string $phoneNumber = '';
-        public string $address = '' ;
+        public string $companyName = '';
         public string $createdAt = '';
         public string $updatedAt = '';
         public static function tableName():string{
@@ -33,9 +32,6 @@
             $this->updatedAt = date('d/m/y h:i:s');
             return parent::save();
         }
-        // public function findOne(){
-        //     return parent::findOne();
-        // }
         public function checkValidName(){
             if(str_contains($this->name, ' ')){
                 $pos = strpos($this->name, ' ');
@@ -72,9 +68,23 @@
                 'dateOfBirth'=>'date_of_birth',
                 'phoneNumber'=>'phone_number',
                 'address'=>'address',
+                'companyName'=>'company_name',
                 'createdAt'=>'created_at',
                 'updatedAt'=>'updated_at'
             ];
+        }
+        public static function updateInfo($body,$userId){
+            $attributes = User::attributes();
+                    $loadStatement = DbModel::loadStatement($body,$attributes);
+                    $setStatement = $loadStatement['statement'];
+                    $params = $loadStatement['params'];
+                    $query = "UPDATE account SET ".implode(' , ', $setStatement)." WHERE id = $userId";
+            
+                    $stmt = Application::$app->db->pdo->prepare($query);
+                    foreach($params as $key){
+                        $stmt->bindValue(":$key",$body[$key]);
+                    }
+                    return $stmt->execute();
         }
         public static function mapColumns():array{
             $mapColumns = array();

@@ -47,6 +47,36 @@ use PDOException;
                 echo $e->getMessage();
             }
         }
+        // public static function update($set,$where){['firstName'=>'khoa']['id'=>1]
+        //     try{
+        //         $tableName = static::tableName();
+        //         $attributes = static::attributes();
+        //         $setArray = array();
+        //         $whereArray = array();
+        //         foreach($set as $key => $value){
+        //             $column = $attributes[$key];
+        //             array_push($setArray, "$column = :$key");
+        //         }
+        //         foreach($where as $key => $value){
+        //             $column = $attributes[$key];
+        //             array_push($whereArray, "$column = :$key");
+        //         }
+        //         $query = "UPDATE $tableName SET ".implode(" , ", $setArray)." WHERE ".implode(" , ",$whereArray);
+        //     }
+        //     catch(Exception $e){
+        //         echo $e->getMessage();
+        //     }
+        // }
+        public static function loadStatement($body, $attributes){
+            foreach($body as $key=>$value){
+                $column = $attributes[$key];
+                if($value){
+                    $params[] = $key;
+                    $statement[] = "$column= :$key";
+                }
+            }
+            return ['params'=>$params, 'statement'=>$statement, 'body'=>$body];
+        }
         public static  function findOne($where){
             try{
                 $tableName = static::tableName();
@@ -78,7 +108,4 @@ use PDOException;
                 echo $e->getMessage();
             }
         }
-        // public static function prepare($sql){
-        //     return Application::$app->db->pdo->prepare($sql);
-        // }
     }
